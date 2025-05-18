@@ -1,0 +1,104 @@
+import { NextResponse } from "next/server";
+import { createAndSendOTP } from "@/services/otp";
+import { auth, db } from "@/lib/firebase";
+import { fetchSignInMethodsForEmail } from "firebase/auth";
+import { collection, query, where, getDocs } from "firebase/firestore";
+
+export async function POST(request: Request) {
+  try {
+    const { email } = await request.json();
+
+    if (!email) {
+      return NextResponse.json(
+        { success: false, message: "Email is required" },
+        { status: 400 }
+      );
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return NextResponse.json(
+        { success: false, message: "Invalid email format" },
+        { status: 400 }
+      );
+    }
+
+    // COMPREHENSIVE CHECK 1: Check in Firebase Auth if email exists
+    try {
+      const signInMethods = await fetchSignInMethodsForEmail(auth, email);
+      if (signInMethods.length > 0) {
+        console.log(
+          `Email ${email} already exists in Firebase Auth with methods:`,
+          signInMethods
+        );
+        return NextResponse.json(
+          {
+            success: false,
+            message: "Email is already registered. Please login instead.",
+            errorCode: "email-already-exists",
+          },
+          { status: 400 }
+        );
+      }
+    } catch (firebaseError: any) {
+      console.error("Firebase Auth error checking email:", firebaseError);
+
+      // If the error explicitly indicates the email exists
+      if (firebaseError.code === "auth/email-already-in-use") {
+        return NextResponse.json(
+          {
+            success: false,
+            message: "Email is already registered. Please login instead.",
+            errorCode: "email-already-exists",
+          },
+          { status: 400 }
+        );
+      }
+    }
+
+    // COMPREHENSIVE CHECK 2: Check in Firestore if email exists
+    try {
+      const usersRef = collection(db, "users");
+      const q = query(usersRef, where("email", "==", email));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        console.log(`Email ${email} already exists in Firestore database`);
+        return NextResponse.json(
+          {
+            success: false,
+            message: "Email is already registered. Please login instead.",
+            errorCode: "email-already-exists",
+          },
+          { status: 400 }
+        );
+      }
+    } catch (firestoreError) {
+      console.error("Firestore error checking email:", firestoreError);
+      // Continue with OTP sending even if this check fails
+    }
+
+    // After passing all checks, create and send OTP
+    console.log(`Sending OTP to new email: ${email}`);
+    const result = await createAndSendOTP(email);
+
+    if (!result.success) {
+      return NextResponse.json(
+        { success: false, message: "Failed to send verification code" },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: "Verification code sent successfully. Please check your email.",
+    });
+  } catch (error) {
+    console.error("Error sending OTP:", error);
+    return NextResponse.json(
+      { success: false, message: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
