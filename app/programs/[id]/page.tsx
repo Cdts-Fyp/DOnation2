@@ -132,7 +132,7 @@ export default function ProgramDetailsPage({ params }: { params: { id: string } 
           </div>
         </div>
         
-        <div className="flex items-center space-x-2">
+        {/* <div className="flex items-center space-x-2">
           <Link
             href={`/programs/${program.id}/edit`}
             className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500"
@@ -157,7 +157,7 @@ export default function ProgramDetailsPage({ params }: { params: { id: string } 
               </>
             )}
           </button>
-        </div>
+        </div> */}
       </div>
       
       {/* Program Cards */}
@@ -333,13 +333,13 @@ export default function ProgramDetailsPage({ params }: { params: { id: string } 
               <div>
                 <h3 className="text-lg font-medium text-gray-900">Quick Actions</h3>
                 <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  <Link
+                  {/* <Link
                     href={`/programs/${program.id}/edit`}
                     className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
                   >
                     <Edit className="h-4 w-4 mr-2 text-gray-500" />
                     Edit Program
-                  </Link>
+                  </Link> */}
                   <Link
                     href="/donations/new"
                     className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700"
@@ -347,12 +347,12 @@ export default function ProgramDetailsPage({ params }: { params: { id: string } 
                     <DollarSign className="h-4 w-4 mr-2" />
                     Record Donation
                   </Link>
-                  <button
+                  {/* <button
                     className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
                   >
                     <Download className="h-4 w-4 mr-2 text-gray-500" />
                     Download Report
-                  </button>
+                  </button> */}
                 </div>
               </div>
             </div>
