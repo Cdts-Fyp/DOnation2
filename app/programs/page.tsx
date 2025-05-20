@@ -371,12 +371,12 @@ export default function ProgramsPage() {
                         >
                           View
                         </Link>
-                        <Link
+                        {/* <Link
                           href={`/programs/${program.id}/edit`}
                           className="text-indigo-600 hover:text-indigo-900"
                         >
                           Edit
-                        </Link>
+                        </Link> */}
                       </div>
                     </td>
                   </tr>
